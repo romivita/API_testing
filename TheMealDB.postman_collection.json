@@ -1,0 +1,298 @@
+{
+	"info": {
+		"_postman_id": "59003b09-6a9f-4372-9360-6298c1d4b22e",
+		"name": "TheMealDB",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET all categories",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a3893115-71d7-4222-b0ef-8d7023ef083d",
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"Verifying response body\", function () {",
+							"    pm.expect(jsonData.categories).to.be.an(\"array\");",
+							"    pm.expect(jsonData.categories[0].idCategory).to.eql('1');",
+							"    pm.expect(jsonData.categories[0].strCategory).to.eql('Beef');",
+							"    pm.expect(jsonData.categories[0].strCategoryThumb).to.include('beef.png');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.themealdb.com/api/json/v1/1/categories.php",
+					"protocol": "https",
+					"host": [
+						"www",
+						"themealdb",
+						"com"
+					],
+					"path": [
+						"api",
+						"json",
+						"v1",
+						"1",
+						"categories.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET all meals filtering by last category",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "a3893115-71d7-4222-b0ef-8d7023ef083d",
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"Verifying response body\", function () {",
+							"    pm.expect(jsonData.meals).to.be.an(\"array\");",
+							"    pm.expect(jsonData.meals[0].strMeal).to.eql('Baingan Bharta');",
+							"    pm.expect(jsonData.meals[0].strMealThumb).to.include('urtpqw1487341253.jpg');",
+							"    pm.expect(jsonData.meals[0].idMeal).to.eql('52807');",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f3eabec5-6b05-45f9-a187-6946b090c1b2",
+						"exec": [
+							"pm.sendRequest({",
+							"    url: 'https://www.themealdb.com/api/json/v1/1/list.php?c=list',",
+							"    method: 'GET',",
+							"}, function (err, res) {",
+							"    const jsonData = res.json();",
+							"    pm.environment.set(\"category\", jsonData.meals[jsonData.meals.length-1].strCategory);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://www.themealdb.com/api/json/v1/1/filter.php?c={{category}}",
+					"protocol": "https",
+					"host": [
+						"www",
+						"themealdb",
+						"com"
+					],
+					"path": [
+						"api",
+						"json",
+						"v1",
+						"1",
+						"filter.php"
+					],
+					"query": [
+						{
+							"key": "c",
+							"value": "{{category}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET all meals filtering by first letter",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "c65f71b7-684e-47f8-8a6c-433abb3725b5",
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"Verifying response body\", function () {",
+							"    pm.expect(jsonData.meals).to.be.an(\"array\");",
+							"    pm.expect(jsonData.meals[0].strMeal).to.match(/^A/)",
+							"    pm.expect(jsonData.meals[jsonData.meals.length-1].strMeal).to.match(/^A/)",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "6ac0ed10-2e61-4c7d-9e67-c1c410625ebb",
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://www.themealdb.com/api/json/v1/1/search.php?f=a",
+					"protocol": "https",
+					"host": [
+						"www",
+						"themealdb",
+						"com"
+					],
+					"path": [
+						"api",
+						"json",
+						"v1",
+						"1",
+						"search.php"
+					],
+					"query": [
+						{
+							"key": "f",
+							"value": "a"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GET all meals filtering a non-existent area",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "18b84da4-811a-4aae-8a7b-01498cde63a9",
+						"exec": [
+							"pm.test(\"Status code is 200\", () => {",
+							"  pm.expect(pm.response.code).to.eql(200);",
+							"});",
+							"",
+							"const jsonData = pm.response.json();",
+							"pm.test(\"Verifying response body\", function () {",
+							"    pm.expect(jsonData.meals).to.be.null;",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"url": {
+					"raw": "https://www.themealdb.com/api/json/v1/1/filter.php?a=Mendocina",
+					"protocol": "https",
+					"host": [
+						"www",
+						"themealdb",
+						"com"
+					],
+					"path": [
+						"api",
+						"json",
+						"v1",
+						"1",
+						"filter.php"
+					],
+					"query": [
+						{
+							"key": "a",
+							"value": "Mendocina"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DEL method not allowed",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "dcd6ddad-ded8-47d0-9b53-00a164518411",
+						"exec": [
+							"pm.test(\"Status code is 405\", () => {",
+							"  pm.expect(pm.response.code).to.eql(405);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "*/*"
+					}
+				],
+				"body": {
+					"mode": "formdata",
+					"formdata": []
+				},
+				"url": {
+					"raw": "https://www.themealdb.com/api/json/v1/1/filter.php?c=Seafood",
+					"protocol": "https",
+					"host": [
+						"www",
+						"themealdb",
+						"com"
+					],
+					"path": [
+						"api",
+						"json",
+						"v1",
+						"1",
+						"filter.php"
+					],
+					"query": [
+						{
+							"key": "c",
+							"value": "Seafood"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
